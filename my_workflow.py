@@ -12,9 +12,11 @@ class DAG():
     self.nodes = []
 
   def _get_nodes_running(self):
+    """Returns a list of nodes which status is 'running'"""
     return [x for x in self.nodes if x.status == 'running']
 
   def _get_nodes_ready(self):
+    """Update nodes status to ready and returns a list of nodes ready"""
     nodes_ready = []
     for node in self.nodes:
       if node.status == 'ready':
@@ -33,12 +35,11 @@ class DAG():
   def run(self):
     """Runs the DAG instance"""
     nodes_ready = self._get_nodes_ready()
-    while nodes_ready or nodes_running:
+    while nodes_ready or self._get_nodes_running():
       for node in nodes_ready:
         node.run() # TODO: thread this
       time.sleep(SLEEP_SECONDS)
       nodes_ready = self._get_nodes_ready()
-      nodes_running = self._get_nodes_running()
 
   def add_node(self, node):
     """Adds a Node instance to the DAG instance"""

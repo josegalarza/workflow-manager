@@ -1,0 +1,21 @@
+# .gitignore
+
+# Backup files
+*.DS_Store
+*~
+*.orig
+[#]*[#]
+.[#]*
+
+# vim
+*.swp
+
+# Python
+*.pyc
+
+# IntelliJ files
+.idea/
+*.iml
+
+# direnv
+.envrc

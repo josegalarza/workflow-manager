@@ -3,7 +3,7 @@
 from workflow import DAG, Node
 
 # Create workflow
-my_workflow = DAG('my_workflow', threads=1)
+my_workflow = DAG('my_workflow', threads=2)
 
 # Create tasks
 task0 = Node(name='node-hello', task='echo "Hello world!"')

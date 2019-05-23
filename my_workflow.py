@@ -11,40 +11,35 @@ class DAG():
     self.name = name
     self.nodes = []
 
-  def _get_nodes_running(self):
-    """Returns a list of nodes which status is 'running'"""
-    return [x for x in self.nodes if x.status == 'running']
+  def _get_nodes_by_status(self, status):
+    """Returns a list of nodes which status is <status>"""
+    return [x for x in self.nodes if x.status == status]
 
-  def _get_nodes_ready(self):
-    """Update nodes status to ready and returns a list of nodes ready"""
-    nodes_ready = []
+  def _update_nodes_status(self):
+    """Update the status of the nodes"""
     for node in self.nodes:
-      if node.status == 'ready':
-        # if node is ready
-        nodes_ready.append(node)
       if node.status == 'init' and node.dependencies == []:
         # if node has no dependencies
         node.set_ready()
-        nodes_ready.append(node)
       if node.status == 'init' and all(map(lambda x: x.status=='done', [ n for n in self.nodes if n.name in node.dependencies])):
         # if all node dependencies are done
         node.set_ready()
-        nodes_ready.append(node)
-    return nodes_ready
-
-  def run(self):
-    """Runs the DAG instance"""
-    nodes_ready = self._get_nodes_ready()
-    while nodes_ready or self._get_nodes_running():
-      for node in nodes_ready:
-        node.run() # TODO: thread this
-      time.sleep(SLEEP_SECONDS)
-      nodes_ready = self._get_nodes_ready()
 
   def add_node(self, node):
     """Adds a Node instance to the DAG instance"""
     # TODO: Add circular reference handler
     self.nodes.append(node)
+
+  def run(self):
+    """Runs the DAG instance"""
+    self._update_nodes_status()
+    nodes_ready = self._get_nodes_by_status('ready')
+    while nodes_ready or self._get_nodes_by_status('running'):
+      for node in nodes_ready:
+        node.run() # TODO: thread this
+      time.sleep(SLEEP_SECONDS)
+      self._update_nodes_status()
+      nodes_ready = self._get_nodes_by_status('ready')
 
 class Node():
   def __init__(self, name, task=None, dependencies=[]):

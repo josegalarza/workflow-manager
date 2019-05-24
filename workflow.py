@@ -7,10 +7,11 @@ from threading import Thread, Lock
 
 SLEEP_SECONDS = .5
 
-RED="\033[1;31m" # init
-YELLOW="\033[1;33m" # ready
-GREEN="\033[0;32m" # running
-DEFAULT="\033[0;37m" 
+BLUE = "\033[1;34m" # init
+YELLOW = "\033[1;33m" # ready
+GREEN = "\033[0;32m" # running
+RED = "\033[1;31m" # error
+DEFAULT = "\033[0;37m" 
 
 class DAG():
   def __init__(self, name, threads=1):
@@ -55,7 +56,7 @@ class DAG():
       for n in sorted(self.nodes, key=lambda x: x.name):
         print("%s | %s%s%s\t | %s\t | %s" % (
           self.name,
-          RED if n.status == 'init' else YELLOW if n.status == 'ready' else GREEN if n.status == 'running' else DEFAULT,
+          BLUE if n.status == 'init' else YELLOW if n.status == 'ready' else GREEN if n.status == 'running' else RED if n.status == 'error' else DEFAULT,
           n.status, DEFAULT,
           n.name,
           n.task))
@@ -93,12 +94,13 @@ class Node():
     if self.status != 'ready':
       raise RuntimeError("Node '%s' is not ready" % self.name)
     else:
-      self.status = 'running'
-      # os.system(self.task) # does not wait
-      # subprocess.Popen(self.task, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) # does not wait
-      subprocess.call(self.task, shell=True) # wait to finish
-      # TODO: add error handler
-      self.status = 'done'
+      try:
+        self.status = 'running'
+        subprocess.check_call([self.task], shell=True)
+        self.status = 'done'
+      except subprocess.CalledProcessError as e:
+        self.status = 'error'
+        # TODO: add error message `self.error_message = e`?
 
   def set_ready(self):
     """Sets node status to 'ready'"""

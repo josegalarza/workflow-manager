@@ -14,6 +14,7 @@ task4 = Node(name='node-candy', task='echo "Eating: candy" & sleep 2', dependenc
 task5 = Node(name='node-bed', task='echo "Going to bed"', dependencies=['node-pizza', 'node-fruit', 'node-candy'])
 task6 = Node(name='node-sleep', task='echo "Sleeping" & sleep 2', dependencies=['node-bed'])
 task7 = Node(name='node-wake', task='echo "Woke up!"', dependencies=['node-sleep'])
+task99 = Node(name='node-error', task='asd')
 
 # Add tasks in no particular order
 my_workflow.add_node(task5)
@@ -24,6 +25,7 @@ my_workflow.add_node(task1)
 my_workflow.add_node(task2)
 my_workflow.add_node(task3)
 my_workflow.add_node(task4)
+my_workflow.add_node(task99)
 
 # Run workflow
 my_workflow.run()

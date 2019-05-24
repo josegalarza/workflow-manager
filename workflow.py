@@ -105,4 +105,8 @@ class Node():
     # TODO: add control - can only set status='ready' if status=='init'
     self.status = 'ready'
 
+  def add_dependency(self, dependency):
+    """Adds a dependency to the node"""
+    self.dependencies = list(set(self.dependencies.append(dependency)))
+
 # TODO: Add tests
